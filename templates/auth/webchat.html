@@ -1,0 +1,37 @@
+{% extends "shared/base.html" %}
+{% block title %}
+<title>Login</title>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <a href="/" class="btn btn-primary">Logout</a>
+    <h1>Feed Chat</h1>
+    <span id="user_name" style="display: none;">{{username}}</span>
+    <h2>Your ID: <span id="ws-id"></span></h2>
+    <form action="" onsubmit="sendMessage(event)">
+        <input type="text" id="messageText" autocomplete="off" />
+        <button class="btn btn-secondary">Send</button>
+    </form>
+    <ul id='messages'>
+    </ul>
+    <script>
+    var client_id = document.getElementById('user_name').innerText
+    document.querySelector("#ws-id").textContent = client_id;
+    var ws = new WebSocket(`ws://127.0.0.1:8000/ws/${client_id}`);
+    ws.onmessage = function(event) {
+        var messages = document.getElementById('messages')
+        var message = document.createElement('li')
+        var content = document.createTextNode(event.data)
+        message.appendChild(content)
+        messages.appendChild(message)
+    };
+
+    function sendMessage(event) {
+        var input = document.getElementById("messageText")
+        ws.send(input.value)
+        input.value = ''
+        event.preventDefault()
+    }
+    </script>
+</div>
+{% endblock %}
